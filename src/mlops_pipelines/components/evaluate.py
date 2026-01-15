@@ -1,3 +1,4 @@
+from kfp import dsl
 from kfp.dsl import Input, Artifact
 
 @dsl.component
