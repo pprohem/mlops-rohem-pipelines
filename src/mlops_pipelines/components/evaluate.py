@@ -1,13 +1,13 @@
 from kfp import dsl
 
-@dsl.component
 def evaluate_op(
-    model: dsl.Input[dsl.Artifact],
-) -> dsl.ContainerSpec:
+    image_uri: str,
+    model_dir: str,
+):
     return dsl.ContainerSpec(
-        image="python:3.11",
-        command=["python", "-c"],
+        image=image_uri,
+        command=["python", "evaluate.py"],
         args=[
-            "print('Evaluating model')"
+            "--model-dir", model_dir,
         ],
     )

@@ -1,14 +1,11 @@
 from kfp import dsl
-
 from mlops_pipelines.components import (
     train_op,
     evaluate_op,
     register_op,
 )
 
-@dsl.pipeline(
-    name="generic-training-pipeline",
-)
+@dsl.pipeline(name="generic-training-pipeline")
 def training_pipeline(
     project_id: str,
     region: str,
@@ -24,11 +21,12 @@ def training_pipeline(
     )
 
     evaluate = evaluate_op(
-        model=train.outputs["model"],
+        image_uri=image_uri,
+        model_dir="/model",
     )
 
     register_op(
-        model=evaluate.outputs["model"],
+        model_dir="/model",
         model_name=model_name,
         project_id=project_id,
         region=region,
