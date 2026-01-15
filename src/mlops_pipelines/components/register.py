@@ -1,11 +1,12 @@
 from kfp import dsl
+from kfp.dsl import Input, Artifact
 
 @dsl.component(
     base_image="python:3.11",
     packages_to_install=["google-cloud-aiplatform"],
 )
 def register_op(
-    model: dsl.Input[dsl.Artifact],
+    model: Input[Artifact],
     model_name: str,
     project_id: str,
     region: str,
@@ -14,15 +15,14 @@ def register_op(
 ) -> str:
     from google.cloud import aiplatform
 
-    aiplatform.init(
-        project=project_id,
-        location=region,
-    )
+    aiplatform.init(project=project_id, location=region)
 
-    model_uploaded = aiplatform.Model.upload(
+    uploaded_model = aiplatform.Model.upload(
         display_name=f"{model_name}-{environment}",
         artifact_uri=model.path,
-        serving_container_image_uri="us-docker.pkg.dev/vertex-ai/prediction/sklearn-cpu.1-3:latest",
+        serving_container_image_uri=(
+            "us-docker.pkg.dev/vertex-ai/prediction/sklearn-cpu.1-3:latest"
+        ),
         labels={
             "model": model_name,
             "env": environment,
@@ -30,4 +30,4 @@ def register_op(
         },
     )
 
-    return model_uploaded.resource_name
+    return uploaded_model.resource_name
