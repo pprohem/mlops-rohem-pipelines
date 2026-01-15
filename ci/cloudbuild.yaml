@@ -9,9 +9,12 @@ steps:
       - -c
       - |
         set -e
-        pip install --upgrade pip
-        pip install build twine \
-          keyring keyrings.google-artifactregistry-auth
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade \
+          build \
+          twine \
+          keyring \
+          keyrings.google-artifactregistry-auth
 
   # ================================
   # 2) Testes básicos
@@ -23,7 +26,7 @@ steps:
       - -c
       - |
         set -e
-        pip install .
+        python -m pip install .
         python -c "from mlops_pipelines.pipelines.training import training_pipeline"
     waitFor: ["install-python-build-dependencies"]
 
@@ -37,7 +40,7 @@ steps:
       - -c
       - |
         set -e
-        python -m build
+        python -m build --wheel
     waitFor: ["validate-pipeline-imports"]
 
   # ================================
