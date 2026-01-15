@@ -12,6 +12,7 @@ steps:
       - -c
       - |
         pip install -r requirements.txt
+        export PYTHONPATH=/workspace:$${PYTHONPATH}
         python scripts/compile_pipeline.py
 
   # 2️⃣ Publica no GCS (versionado)
