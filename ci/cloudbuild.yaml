@@ -47,3 +47,6 @@ steps:
         twine upload \
           --repository-url https://us-central1-python.pkg.dev/$PROJECT_ID/mlops-python/ \
           dist/*
+
+options:
+  logging: CLOUD_LOGGING_ONLY
