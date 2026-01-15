@@ -1,4 +1,11 @@
 from kfp import dsl
+
+from mlops_pipelines.components import (
+    train_op,
+    evaluate_op,
+    register_op,
+)
+
 @dsl.pipeline(name="generic-training-pipeline")
 def training_pipeline(
     project_id: str,
