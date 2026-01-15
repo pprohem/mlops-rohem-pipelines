@@ -4,6 +4,9 @@ kfp==2.7.0
 # Vertex AI SDK
 google-cloud-aiplatform==1.42.1
 
+# Google Cloud Pipeline Components
+google-cloud-pipeline-components==2.14.1
+
 # YAML (caso use configs por ambiente)
 PyYAML==6.0.1
 
