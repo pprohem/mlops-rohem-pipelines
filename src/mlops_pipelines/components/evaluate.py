@@ -1,5 +1,5 @@
 from kfp import dsl
-from kfp.dsl import Input, Artifact
+from kfp.dsl import Input, Output, Artifact
 
 @dsl.component
 def evaluate_op(
