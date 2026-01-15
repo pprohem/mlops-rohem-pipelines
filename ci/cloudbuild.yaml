@@ -33,3 +33,6 @@ steps:
         "dist/train_pipeline.json",
         "gs://$_PIPELINE_BUCKET/$_PIPELINE_NAME/v$VERSION/pipeline.json"
       ]
+
+options:
+  logging: CLOUD_LOGGING_ONLY
