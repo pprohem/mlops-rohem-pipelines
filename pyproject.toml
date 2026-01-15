@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mlops-pipelines"
+version = "0.1.0"
+description = "Reusable Vertex AI Pipelines for MLOps Platform"
+authors = [
+  { name="Pedro Rohem" }
+]
+dependencies = [
+  "kfp>=2.7.0",
+  "google-cloud-aiplatform>=1.42.0",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}

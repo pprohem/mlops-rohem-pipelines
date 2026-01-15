@@ -1,30 +1,49 @@
-substitutions:
-  _PIPELINE_BUCKET: mlops-pipelines-definitions
-  _PIPELINE_NAME: train_pipeline
-  _VERSION_FILE: VERSION
-
 steps:
-  # 1️⃣ Instala dependências e compila pipeline
-  - id: compile_pipeline
-    name: python:3.10
+  # ================================
+  # 1) Setup Python + deps
+  # ================================
+  - name: python:3.11
     entrypoint: bash
     args:
       - -c
       - |
-        pip install -r requirements.txt
-        export PYTHONPATH=/workspace:$${PYTHONPATH}
-        python scripts/compile_pipeline.py
+        set -e
+        pip install --upgrade pip
+        pip install build twine \
+          keyring keyrings.google-artifactregistry-auth
 
-  # 2️⃣ Publica no GCS (versionado)
-  - id: publish_pipeline
-    name: gcr.io/cloud-builders/gsutil
+  # ================================
+  # 2) Testes básicos
+  # ================================
+  - name: python:3.11
     entrypoint: bash
     args:
       - -c
       - |
-        VERSION=$(cat VERSION)
-        gsutil cp dist/train_pipeline.json gs://$_PIPELINE_BUCKET/$_PIPELINE_NAME/v$${VERSION}/pipeline.json
-    waitFor: ["compile_pipeline"]
+        set -e
+        pip install .
+        python -c "from mlops_pipelines.pipelines.training import training_pipeline"
 
-options:
-  logging: CLOUD_LOGGING_ONLY
+  # ================================
+  # 3) Build do pacote
+  # ================================
+  - name: python:3.11
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -e
+        python -m build
+
+  # ================================
+  # 4) Upload para Artifact Registry
+  # ================================
+  - name: python:3.11
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -e
+        twine upload \
+          --repository-url https://us-central1-python.pkg.dev/$PROJECT_ID/mlops-python/ \
+          dist/*
