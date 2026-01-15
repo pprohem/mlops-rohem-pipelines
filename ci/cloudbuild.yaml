@@ -1,0 +1,35 @@
+substitutions:
+  _PIPELINE_BUCKET: mlops-pipelines-definitions
+  _PIPELINE_NAME: train_pipeline
+  _VERSION_FILE: VERSION
+
+steps:
+  # 1️⃣ Instala dependências
+  - name: python:3.10
+    entrypoint: pip
+    args: ["install", "-r", "requirements.txt"]
+
+  # 2️⃣ Compila pipeline
+  - name: python:3.10
+    entrypoint: python
+    args: ["scripts/compile_pipeline.py"]
+
+  # 3️⃣ Lê versão
+  - name: bash
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        VERSION=$(cat VERSION)
+        echo "VERSION=$VERSION" > /workspace/version.env
+
+  # 4️⃣ Publica no GCS (versionado)
+  - name: gcr.io/cloud-builders/gsutil
+    env:
+      - $(cat /workspace/version.env)
+    args:
+      [
+        "cp",
+        "dist/train_pipeline.json",
+        "gs://$_PIPELINE_BUCKET/$_PIPELINE_NAME/v$VERSION/pipeline.json"
+      ]
