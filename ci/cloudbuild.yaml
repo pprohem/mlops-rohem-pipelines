@@ -5,34 +5,28 @@ substitutions:
 
 steps:
   # 1️⃣ Instala dependências
-  - name: python:3.10
+  - id: install_dependencies
+    name: python:3.10
     entrypoint: pip
     args: ["install", "-r", "requirements.txt"]
 
   # 2️⃣ Compila pipeline
-  - name: python:3.10
+  - id: compile_pipeline
+    name: python:3.10
     entrypoint: python
     args: ["scripts/compile_pipeline.py"]
+    waitFor: ["install_dependencies"]
 
-  # 3️⃣ Lê versão
-  - name: bash
+  # 3️⃣ Lê versão e publica no GCS (versionado)
+  - id: publish_pipeline
+    name: gcr.io/cloud-builders/gsutil
     entrypoint: bash
     args:
       - -c
       - |
         VERSION=$(cat VERSION)
-        echo "VERSION=$VERSION" > /workspace/version.env
-
-  # 4️⃣ Publica no GCS (versionado)
-  - name: gcr.io/cloud-builders/gsutil
-    env:
-      - $(cat /workspace/version.env)
-    args:
-      [
-        "cp",
-        "dist/train_pipeline.json",
-        "gs://$_PIPELINE_BUCKET/$_PIPELINE_NAME/v$VERSION/pipeline.json"
-      ]
+        gsutil cp dist/train_pipeline.json gs://$_PIPELINE_BUCKET/$_PIPELINE_NAME/v$${VERSION}/pipeline.json
+    waitFor: ["compile_pipeline"]
 
 options:
   logging: CLOUD_LOGGING_ONLY
