@@ -4,20 +4,17 @@ substitutions:
   _VERSION_FILE: VERSION
 
 steps:
-  # 1️⃣ Instala dependências
-  - id: install_dependencies
-    name: python:3.10
-    entrypoint: pip
-    args: ["install", "-r", "requirements.txt"]
-
-  # 2️⃣ Compila pipeline
+  # 1️⃣ Instala dependências e compila pipeline
   - id: compile_pipeline
     name: python:3.10
-    entrypoint: python
-    args: ["scripts/compile_pipeline.py"]
-    waitFor: ["install_dependencies"]
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        pip install -r requirements.txt
+        python scripts/compile_pipeline.py
 
-  # 3️⃣ Lê versão e publica no GCS (versionado)
+  # 2️⃣ Publica no GCS (versionado)
   - id: publish_pipeline
     name: gcr.io/cloud-builders/gsutil
     entrypoint: bash
