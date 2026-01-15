@@ -15,7 +15,10 @@ def register_op(
 ) -> str:
     from google.cloud import aiplatform
 
-    aiplatform.init(project=project_id, location=region)
+    aiplatform.init(
+        project=project_id,
+        location=region,
+    )
 
     uploaded_model = aiplatform.Model.upload(
         display_name=f"{model_name}-{environment}",

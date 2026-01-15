@@ -1,5 +1,4 @@
 from kfp import dsl
-
 from mlops_pipelines.components import (
     train_op,
     evaluate_op,
@@ -19,10 +18,14 @@ def training_pipeline(
     train = train_op(
         image_uri=image_uri,
         dataset_uri=dataset_uri,
+        project_id=project_id,
+        region=region,
     )
 
     evaluate = evaluate_op(
         image_uri=image_uri,
+        project_id=project_id,
+        region=region,
         model=train.outputs["model"],
     )
 
