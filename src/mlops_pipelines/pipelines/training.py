@@ -1,3 +1,4 @@
+from kfp import dsl
 @dsl.pipeline(name="generic-training-pipeline")
 def training_pipeline(
     project_id: str,
