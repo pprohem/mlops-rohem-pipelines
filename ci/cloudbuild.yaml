@@ -1,23 +1,6 @@
 steps:
   # ================================
-  # 1) Setup Python + deps
-  # ================================
-  - id: install-python-build-dependencies
-    name: python:3.11
-    entrypoint: bash
-    args:
-      - -c
-      - |
-        set -e
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade \
-          build \
-          twine \
-          keyring \
-          keyrings.google-artifactregistry-auth
-
-  # ================================
-  # 2) Testes básicos
+  # 1) Testes básicos
   # ================================
   - id: validate-pipeline-imports
     name: python:3.11
@@ -28,10 +11,9 @@ steps:
         set -e
         python -m pip install .
         python -c "from mlops_pipelines.pipelines.training import training_pipeline"
-    waitFor: ["install-python-build-dependencies"]
 
   # ================================
-  # 3) Build do pacote
+  # 2) Build do pacote
   # ================================
   - id: build-python-package
     name: python:3.11
@@ -40,11 +22,12 @@ steps:
       - -c
       - |
         set -e
+        python -m pip install --upgrade pip build
         python -m build --wheel
     waitFor: ["validate-pipeline-imports"]
 
   # ================================
-  # 4) Upload para Artifact Registry
+  # 3) Upload para Artifact Registry
   # ================================
   - id: publish-to-artifact-registry
     name: python:3.11
@@ -53,6 +36,7 @@ steps:
       - -c
       - |
         set -e
+        python -m pip install --upgrade pip twine keyring keyrings.google-artifactregistry-auth
         twine upload \
           --repository-url https://us-central1-python.pkg.dev/$PROJECT_ID/mlops-python/ \
           dist/*
