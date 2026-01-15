@@ -12,15 +12,12 @@ def train_op(
     region: str,
     model: Output[Artifact],
 ):
-    """
-    Executa o treino usando a imagem do time de DS.
-    O container DEVE escrever o modelo em model.path.
-    """
     from google.cloud import aiplatform
 
     aiplatform.init(
         project=project_id,
         location=region,
+        staging_bucket=f"gs://{project_id}-vertex-staging",
     )
 
     job = aiplatform.CustomJob(
@@ -28,7 +25,7 @@ def train_op(
         worker_pool_specs=[
             {
                 "machine_spec": {
-                    "machine_type": "e2-standard-4",
+                    "machine_type": "n1-standard-4",
                 },
                 "replica_count": 1,
                 "container_spec": {

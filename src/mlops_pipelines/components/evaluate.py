@@ -12,15 +12,12 @@ def evaluate_op(
     model: Input[Artifact],
     metrics: Output[Artifact],
 ):
-    """
-    Executa avaliação usando a imagem do time de DS.
-    O container DEVE escrever métricas em metrics.path.
-    """
     from google.cloud import aiplatform
 
     aiplatform.init(
         project=project_id,
         location=region,
+        staging_bucket=f"gs://{project_id}-vertex-staging",
     )
 
     job = aiplatform.CustomJob(
@@ -28,7 +25,7 @@ def evaluate_op(
         worker_pool_specs=[
             {
                 "machine_spec": {
-                    "machine_type": "e2-standard-4",
+                    "machine_type": "n1-standard-4",
                 },
                 "replica_count": 1,
                 "container_spec": {

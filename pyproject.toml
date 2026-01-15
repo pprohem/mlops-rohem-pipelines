@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mlops-pipelines"
-version = "0.2.2"
+version = "0.2.3"
 description = "Reusable Vertex AI Pipelines for MLOps Platform"
 authors = [
   { name="Pedro Rohem" }
