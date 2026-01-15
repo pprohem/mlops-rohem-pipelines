@@ -9,13 +9,14 @@ def pipeline(
     model_display_name: str,
     min_r2: float,
     max_mae: float,
+    base_output_dir: str = "gs://mlops-cd4ml-trial/training",
 ):
     # STEP 1 — Treino (container do DS)
     train = CustomTrainingJobOp(
         project="mlops-rohem",
         location="us-central1",
         display_name=model_display_name,
-        base_output_directory="gs://mlops-cd4ml-trial/training",
+        base_output_directory=base_output_dir,
         worker_pool_specs=[{
             "machine_spec": {"machine_type": "e2-standard-4"},
             "replica_count": 1,
@@ -28,13 +29,13 @@ def pipeline(
 
     # STEP 2 — Gate de qualidade
     validate_model(
-        model_dir=train.outputs["model_dir"],
+        model_dir=train.output,
         min_r2=min_r2,
         max_mae=max_mae,
     )
 
     # STEP 3 — Registro do modelo
     register_model(
-        model_dir=train.outputs["model_dir"],
+        model_dir=train.output,
         display_name=model_display_name,
     )
